@@ -18,7 +18,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-# /vendor - incluido en repo para deploy en Render (ver README)
+/vendor
 Homestead.json
 Homestead.yaml
 Thumbs.db
