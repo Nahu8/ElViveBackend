@@ -12,6 +12,10 @@ FROM richarvey/nginx-php-fpm:3.1.6
 COPY . .
 COPY --from=frontend /app/public/build /var/www/html/public/build
 
+# Composer durante build (evita falta de memoria en runtime - Free tier)
+ENV COMPOSER_MEMORY_LIMIT=-1
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
 # Image config
 ENV SKIP_COMPOSER 1
 ENV WEBROOT /var/www/html/public

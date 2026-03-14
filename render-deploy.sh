@@ -3,9 +3,6 @@ set -e
 
 cd /var/www/html
 
-echo "Running composer..."
-composer install --no-dev --optimize-autoloader
-
 echo "Caching config..."
 php artisan config:cache
 
