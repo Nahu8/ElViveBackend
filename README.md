@@ -54,40 +54,9 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## ElVive - Despliegue en Render
+## ElVive Backend
 
-### Método recomendado: Imagen pre-construida (GitHub Actions)
-
-Render Free tiene poca memoria para build. La solución: **GitHub Actions construye la imagen** y Render la usa.
-
-1. **Push a main** → GitHub Actions construye y sube la imagen a `ghcr.io/[tu-usuario]/elvivebackend:latest`
-
-2. **En Render:** Crear nuevo Web Service → **Imagen de Docker** (no "Build from repo")
-   - **URL de imagen:** `ghcr.io/Nahu8/elvivebackend:latest` (ajusta si tu usuario es otro)
-   - **Registry:** Si es privado, agregar credenciales (usuario GitHub + Personal Access Token con `read:packages`)
-
-3. **Variables de entorno** (igual que antes):
-
-| Variable | Valor |
-|----------|-------|
-| `APP_KEY` | `php artisan key:generate --show` |
-| `APP_URL` | https://tu-app.onrender.com |
-| `JWT_SECRET` | Generar con `Str::random(64)` |
-| `DB_CONNECTION` | mysql |
-| `DB_HOST` | elvivemysql-nahuelalderete08-09c9.g.aivencloud.com |
-| `DB_PORT` | 11430 |
-| `DB_DATABASE` | defaultdb |
-| `DB_USERNAME` | avnadmin |
-| `DB_PASSWORD` | (tu contraseña) |
-| `DB_SSL_VERIFY` | false |
-| `APP_ENV` | production |
-| `APP_DEBUG` | false |
-
-4. **Health Check Path:** `/up`
-
-### Alternativa: Render Starter ($7/mes)
-
-Si prefieres build directo en Render, usa **Starter** en lugar de Free. Tiene más memoria para el build.
+API Laravel para la iglesia El Vive. Ver **[RENDER_DEPLOY.md](RENDER_DEPLOY.md)** para instrucciones completas de despliegue en Render.
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
