@@ -6,20 +6,11 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Composer en imagen ligera (evita memory limit al extraer en nginx-php-fpm)
-FROM composer:2 AS composer
-WORKDIR /app
-COPY composer.json composer.lock ./
-ENV COMPOSER_MEMORY_LIMIT=-1
-ENV COMPOSER_MAX_PARALLEL_HTTP=2
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-dist
-
-# Stage 3: Laravel app
+# Stage 2: Laravel app (vendor viene del repo - evita memory limit en Render Free)
 FROM richarvey/nginx-php-fpm:3.1.6
 
 COPY . .
 COPY --from=frontend /app/public/build /var/www/html/public/build
-COPY --from=composer /app/vendor /var/www/html/vendor
 
 # Image config
 ENV SKIP_COMPOSER 1

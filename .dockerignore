@@ -3,7 +3,7 @@
 /public/storage
 /public/build
 /storage/*.key
-/vendor
+# /vendor - incluido en repo para Render Free (evita composer en build)
 .env
 .env.*
 !.env.example
