@@ -58,7 +58,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 =======
 ## ElVive - Despliegue en Render
 
-> **Importante:** El proyecto incluye `vendor` en el repo para evitar el memory limit de Render Free durante el build. Si actualizas dependencias con `composer update`, ejecuta `composer install --no-dev --optimize-autoloader` y vuelve a commitear `vendor`.
+> **Importante:** El proyecto incluye `vendor` en el repo para evitar el memory limit de Render Free. Antes de commitear vendor, ejecuta `.\scripts\prepare-vendor-for-deploy.ps1` para eliminar `.git` de los paquetes (evita errores de submódulos). Si actualizas dependencias: `composer install --no-dev --optimize-autoloader` → `.\scripts\prepare-vendor-for-deploy.ps1` → commit.
 
 ### 1. Crear Web Service en Render
 
