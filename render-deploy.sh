@@ -1,29 +1,22 @@
 #!/usr/bin/env bash
 set -e
 
-cd /var/www/html
+cd /app
 
-# Verificar que use MySQL (requerido en Render)
-if [ -z "$DB_CONNECTION" ] || [ "$DB_CONNECTION" = "sqlite" ]; then
-  echo "ERROR: Configura DB_CONNECTION=mysql y las variables DB_* en Render Environment"
+# Verificar MySQL
+if [ -z "$DATABASE_URL" ]; then
+  echo "ERROR: Configura DATABASE_URL en Render Environment (formato: mysql://user:pass@host:port/db)"
   exit 1
 fi
 
-# Package discover (composer --no-scripts lo omite en build)
-php artisan package:discover --ansi
-
-# Permisos para storage y cache
-chmod -R 775 storage bootstrap/cache 2>/dev/null || true
-
-# Migraciones (crítico)
+# Migraciones
 echo "Running migrations..."
-php artisan migrate --force
+npx prisma migrate deploy
 
-# Storage link
-php artisan storage:link 2>/dev/null || true
+# Crear directorios necesarios
+mkdir -p storage/app/public/uploads
+mkdir -p storage/app/public/uploads/images
+mkdir -p storage/app/public/uploads/videos
+mkdir -p storage/app/public/uploads/icons
 
-# Cache (opcional)
-php artisan config:cache 2>/dev/null || true
-php artisan route:cache 2>/dev/null || true
-
-exec /start.sh
+exec node src/server.js

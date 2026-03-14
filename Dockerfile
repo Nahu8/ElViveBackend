@@ -1,38 +1,32 @@
-# Stage 1: Build frontend assets
+# Stage 1: Build frontend (optional - si usas Vite para assets)
 FROM node:20-alpine AS frontend
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci --omit=dev 2>/dev/null || npm install --omit=dev
 COPY . .
-RUN npm run build
+RUN npm run build 2>/dev/null || true
 
-# Stage 2: Composer (imagen ligera - evita memory limit)
-FROM composer:2 AS composer
+# Stage 2: App
+FROM node:20-alpine
+
 WORKDIR /app
-COPY composer.json composer.lock ./
-ENV COMPOSER_MEMORY_LIMIT=-1
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-dist
 
-# Stage 3: Laravel app
-FROM richarvey/nginx-php-fpm:3.1.6
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev 2>/dev/null || npm install --omit=dev
+
+# Prisma
+COPY prisma ./prisma
+RUN npx prisma generate
 
 COPY . .
-COPY --from=frontend /app/public/build /var/www/html/public/build
-COPY --from=composer /app/vendor /var/www/html/vendor
 
-# Image config
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+# Frontend build (si existe)
+COPY --from=frontend /app/public/build /app/public/build 2>/dev/null || true
 
-# Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
+ENV NODE_ENV=production
+ENV PORT=8000
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
+EXPOSE 8000
 
 COPY render-deploy.sh /render-deploy.sh
 RUN chmod +x /render-deploy.sh

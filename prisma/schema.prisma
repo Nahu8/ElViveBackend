@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Home {
+  id                    Int       @id @default(autoincrement())
+  heroTitle             String?
+  heroButton1Text       String?
+  heroButton1Link       String?
+  heroButton2Text       String?
+  heroButton2Link       String?
+  heroVideoUrl          String?   @db.Text
+  heroVideoData         Bytes?    @db.LongBlob
+  heroVideoMime         String?
+  heroVideoName         String?
+  heroVideo2Data        Bytes?    @db.LongBlob
+  heroVideo2Mime        String?
+  heroVideo2Name        String?
+  heroIconDomData       Bytes?    @db.LongBlob
+  heroIconDomMime       String?
+  heroIconDomName       String?
+  heroIconMierData      Bytes?    @db.LongBlob
+  heroIconMierMime      String?
+  heroIconMierName      String?
+  video1Url             String?
+  video2Url             String?
+  currentTheme          Int?
+  celebrations          Json?
+  meetingDaysSummary    Json?
+  ministriesSummary     Json?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("homes")
+}
+
+model Theme {
+  id        Int      @id @default(autoincrement())
+  name      String
+  videoUrl1 String?
+  videoUrl2 String?
+  iconUrl1  String?
+  iconUrl2  String?
+  palette1  Json?
+  palette2  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("themes")
+}
+
+model Contact {
+  id            Int      @id @default(autoincrement())
+  email         String?
+  phone         String?
+  address       String?
+  city          String?
+  socialMedia   Json?
+  schedules     Json?
+  departments   Json?
+  mapEmbed      String?  @db.Text
+  additionalInfo String? @db.Text
+  pageContent   Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("contacts")
+}
+
+model Layout {
+  id                    Int      @id @default(autoincrement())
+  navLinks              Json?
+  footerBrandTitle      String?
+  footerBrandDescription String? @db.Text
+  footerFacebookUrl     String?
+  footerInstagramUrl    String?
+  footerYoutubeUrl      String?
+  footerAddress         String?
+  footerEmail           String?
+  footerPhone           String?
+  footerCopyright       String?
+  footerPrivacyUrl      String?
+  footerTermsUrl        String?
+  quickLinks            Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("layouts")
+}
+
+model MeetingDays {
+  id              Int      @id @default(autoincrement())
+  calendarEvents  Json?
+  recurringMeetings Json?
+  hero            Json?
+  heroImageData   Bytes?   @db.LongBlob
+  heroImageMime   String?
+  heroImageName   String?
+  upcomingEvents  Json?
+  eventCta        Json?
+  eventSettings   Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("meeting_days")
+}
+
+model MinistriesContent {
+  id          Int      @id @default(autoincrement())
+  hero        Json?
+  ministries  Json?
+  statistics  Json?
+  process     Json?
+  testimonials Json?
+  faqs        Json?
+  pageContent Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("ministries_content")
+}
+
+model MinistryItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String   @db.Text
+  contact     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("ministry_items")
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  date        String
+  time        String
+  location    String
+  category    String
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("events")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  ministry  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact_messages")
+}
+
+model Media {
+  id           Int      @id @default(autoincrement())
+  filename     String
+  originalName String
+  path         String
+  type         String
+  size         Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("media")
+}
+
+model MeetingCardImage {
+  id        Int      @id @default(autoincrement())
+  cardIndex Int      @unique
+  imageData Bytes?   @db.LongBlob
+  imageMime String?
+  imageName String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("meeting_card_images")
+}
+
+model MinistryMedia {
+  id        Int      @id @default(autoincrement())
+  ministryId String
+  mediaType String
+  imageData Bytes?   @db.LongBlob
+  imageMime String?
+  imageName String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ministry_media")
+}
+
+model MinistryVideo {
+  id         Int      @id @default(autoincrement())
+  ministryId String
+  videoData  Bytes?   @db.LongBlob
+  videoMime  String?
+  videoName  String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("ministry_videos")
+}
+
+model MinistryCardImage {
+  id         Int      @id @default(autoincrement())
+  ministryId String   @unique
+  imageData  Bytes?   @db.LongBlob
+  imageMime  String?
+  imageName  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("ministry_card_images")
+}
+
+model EventMedia {
+  id        Int      @id @default(autoincrement())
+  eventId   String
+  mediaType String
+  imageData Bytes?   @db.LongBlob
+  imageMime String?
+  imageName String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("event_media")
+}
+
+model SectionIcon {
+  id        Int      @id @default(autoincrement())
+  pageKey   String
+  sectionKey String
+  imageData Bytes?   @db.LongBlob
+  imageMime String?
+  imageName String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([pageKey, sectionKey])
+  @@map("section_icons")
+}

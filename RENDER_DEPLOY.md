@@ -1,10 +1,10 @@
 # ElVive Backend - Despliegue en Render
 
-Guía paso a paso para desplegar en Render sin problemas.
+Guía paso a paso para desplegar en Render (Node.js).
 
 ## Flujo de deploy
 
-1. **GitHub Actions** construye la imagen Docker (con más memoria que Render Free)
+1. **GitHub Actions** construye la imagen Docker
 2. La imagen se sube a `ghcr.io/Nahu8/elvivebackend:latest`
 3. **Render** descarga y ejecuta la imagen (no construye)
 
@@ -27,21 +27,15 @@ En **Environment** → **Add Environment Variable**, agrega:
 
 | Variable | Valor |
 |----------|-------|
-| `APP_ENV` | production |
-| `APP_DEBUG` | false |
-| `APP_KEY` | Ejecutar local: `php artisan key:generate --show` |
-| `APP_URL` | `https://elvivebackend.onrender.com` (ajustar tras el deploy) |
-| `JWT_SECRET` | Generar: `php artisan tinker` → `Str::random(64)` |
-| `DB_CONNECTION` | mysql |
-| `DB_HOST` | elvivemysql-nahuelalderete08-09c9.g.aivencloud.com |
-| `DB_PORT` | 11430 |
-| `DB_DATABASE` | defaultdb |
-| `DB_USERNAME` | avnadmin |
-| `DB_PASSWORD` | (tu contraseña de Aiven) |
-| `DB_SSL_VERIFY` | false |
-| `SESSION_DRIVER` | database |
-| `CACHE_STORE` | database |
-| `QUEUE_CONNECTION` | database |
+| `DATABASE_URL` | `mysql://USER:PASSWORD@HOST:PORT/DATABASE?ssl-mode=REQUIRED` |
+| `JWT_SECRET` | Generar: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `PORT` | 8000 |
+| `NODE_ENV` | production |
+
+**Ejemplo DATABASE_URL (Aiven):**
+```
+mysql://avnadmin:tu_password@elvivemysql-xxx.g.aivencloud.com:11430/defaultdb?ssl-mode=REQUIRED
+```
 
 ### 1.3 Configuración avanzada
 
@@ -50,21 +44,19 @@ En **Environment** → **Add Environment Variable**, agrega:
 
 ### 1.4 Deploy Hook (opcional)
 
-Para que Render haga deploy automático cuando GitHub Actions termine:
+Para deploy automático tras GitHub Actions:
 
-1. En Render → tu servicio → **Settings** → **Deploy Hook**
-2. Copia la URL
-3. En GitHub → repo → **Settings** → **Secrets** → **Actions**
-4. Nuevo secret: `RENDER_DEPLOY_HOOK_URL` = (pegar URL)
+1. Render → tu servicio → **Settings** → **Deploy Hook** → copiar URL
+2. GitHub → repo → **Settings** → **Secrets** → Nuevo: `RENDER_DEPLOY_HOOK_URL`
 
 ---
 
 ## Paso 2: Primer deploy
 
-1. Haz push a `main`: `git push origin main`
-2. Espera que GitHub Actions termine (tab Actions)
-3. En Render → **Manual Deploy** → **Deploy latest**
-4. Cuando termine, actualiza `APP_URL` con la URL real de tu servicio
+1. Push a `main`: `git push origin main`
+2. Espera que GitHub Actions termine
+3. Render → **Manual Deploy** → **Deploy latest**
+4. Crear usuario inicial (opcional): ejecutar `node scripts/seed-user.js` localmente con DATABASE_URL de producción, o usar el endpoint `POST /auth/users` con un superadmin existente.
 
 ---
 
@@ -73,8 +65,8 @@ Para que Render haga deploy automático cuando GitHub Actions termine:
 Base URL: `https://tu-app.onrender.com`
 
 ### Health
-- `GET /up` - Health check Laravel
-- `GET /api/health` - Health API
+- `GET /up` - Health check
+- `GET /api/health` - Estado API
 
 ### Públicos (Frontend)
 - `GET /public/config/home`
@@ -88,9 +80,9 @@ Base URL: `https://tu-app.onrender.com`
 
 ### Auth
 - `POST /auth/login` - Login (retorna JWT)
-- `POST /auth/users` - Crear usuario (requiere JWT)
+- `POST /auth/users` - Crear usuario (requiere JWT superadmin)
 
-### BackOffice (requiere JWT en header: `Authorization: Bearer <token>`)
+### BackOffice (requiere JWT: `Authorization: Bearer <token>`)
 
 **Home:** `GET/PUT/PATCH /api/home`, `/api/home/hero`, `/api/home/video`, etc.
 **Meeting Days:** `GET/PUT/PATCH /api/meeting-days`, etc.
@@ -107,7 +99,6 @@ Base URL: `https://tu-app.onrender.com`
 
 ## Solución de problemas
 
-- **Build falla en Render:** Asegúrate de usar **imagen existente**, no build desde repo.
-- **Error symfony/error-handler:** Solo ocurre si Render intenta hacer build. Usa la imagen de ghcr.io.
-- **Migración falla (columna existe):** Las migraciones son idempotentes. Si persiste, revisa la base de datos.
-- **502 Bad Gateway:** El servicio puede tardar ~50s en iniciar (instancia Free). Espera y recarga.
+- **Build falla en Render:** Usa **imagen existente**, no build desde repo.
+- **502 Bad Gateway:** La instancia Free puede tardar ~50s en iniciar.
+- **Error de conexión a BD:** Verifica que DATABASE_URL sea correcta y que el host Aiven permita conexiones desde Render.
