@@ -3,18 +3,22 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
         Schema::table('meeting_days', function (Blueprint $table) {
-            $table->string('heroImageMime', 50)->nullable()->after('hero');
-            $table->string('heroImageName', 255)->nullable()->after('heroImageMime');
+            if (! Schema::hasColumn('meeting_days', 'heroImageData')) {
+                $table->longText('heroImageData')->nullable();
+            }
+            if (! Schema::hasColumn('meeting_days', 'heroImageMime')) {
+                $table->string('heroImageMime', 50)->nullable();
+            }
+            if (! Schema::hasColumn('meeting_days', 'heroImageName')) {
+                $table->string('heroImageName', 255)->nullable();
+            }
         });
-
-        DB::statement("ALTER TABLE meeting_days ADD COLUMN heroImageData LONGBLOB NULL AFTER hero");
     }
 
     public function down(): void

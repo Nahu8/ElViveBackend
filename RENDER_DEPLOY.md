@@ -15,7 +15,7 @@ Guía paso a paso para desplegar en Render sin problemas.
 ### 1.1 Crear nuevo Web Service
 
 1. En [Render Dashboard](https://dashboard.render.com) → **+ New** → **Web Service**
-2. **Importante:** En "Source", selecciona **Docker** y luego **Deploy an existing image**
+2. **IMPORTANTE:** Selecciona **"Deploy an existing image"** (NO "Build from Git")
 3. **Image URL:** `ghcr.io/nahu8/elvivebackend:latest`
 4. Si el repo es privado: agregar credenciales de GitHub Container Registry
 5. **Name:** ElViveBackend

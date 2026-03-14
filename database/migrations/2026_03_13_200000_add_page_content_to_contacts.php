@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('contacts', function (Blueprint $table) {
             if (! Schema::hasColumn('contacts', 'pageContent')) {
-                $table->json('pageContent')->nullable()->after('additionalInfo');
+                $table->json('pageContent')->nullable();
             }
         });
     }

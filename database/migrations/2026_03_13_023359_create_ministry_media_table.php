@@ -13,12 +13,12 @@ return new class extends Migration
             $table->id();
             $table->string('ministryId', 100)->index();
             $table->enum('mediaType', ['icon', 'photo']);
+            $table->longText('imageData')->nullable();
             $table->string('imageMime', 50)->nullable();
             $table->string('imageName', 255)->nullable();
             $table->unsignedInteger('sortOrder')->default(0);
             $table->timestamps();
         });
-        DB::statement("ALTER TABLE ministry_media ADD COLUMN imageData LONGBLOB NULL AFTER mediaType");
     }
 
     public function down(): void
