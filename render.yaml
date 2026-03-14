@@ -1,0 +1,8 @@
+# Render Blueprint - https://render.com/docs/blueprint-spec
+# Configurar las variables de entorno en el Dashboard de Render
+
+services:
+  - type: web
+    name: elvive-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
